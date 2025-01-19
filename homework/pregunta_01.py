@@ -5,8 +5,49 @@
 Escriba el codigo que ejecute la accion solicitada en cada pregunta.
 """
 
+import os
+import zipfile
+import pandas as pd
 
 def pregunta_01():
+    
+    ruta = "files/input.zip"
+    with zipfile.ZipFile(ruta, 'r') as zip_ref:
+        zip_ref.extractall("input")
+
+    ## Crear el output en files: 
+    output_dir = os.path.join("files","output")
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+        
+        
+    phrases_test = []
+    targets_test = []
+    phrases_train = []
+    targets_train = []    
+    
+    test_dir = os.path.join("input","input","test")
+    train_dir = os.path.join("input","input","train")
+    sentimientos_nombres = ["negative","neutral","positive"]
+    
+    
+    for sentimiento in sentimientos_nombres:
+        for file in os.listdir(os.path.join(test_dir,sentimiento)):
+            with open(os.path.join(test_dir,sentimiento,file), 'r') as f:
+                phrases_test.append(f.read())
+                targets_test.append(sentimiento)
+        for file in os.listdir(os.path.join(train_dir,sentimiento)):
+            with open(os.path.join(train_dir,sentimiento,file), 'r') as f:
+                phrases_train.append(f.read())
+                targets_train.append(sentimiento)
+            
+    
+    test_data = pd.DataFrame({'phrase': phrases_test, 'target': targets_test})
+    train_data = pd.DataFrame({'phrase': phrases_train, 'target': targets_train})
+    
+    test_data.to_csv(os.path.join(output_dir,"test_dataset.csv"), index=False)
+    train_data.to_csv(os.path.join(output_dir,"train_dataset.csv"), index=False)
+
     """
     La información requerida para este laboratio esta almacenada en el
     archivo "files/input.zip" ubicado en la carpeta raíz.
@@ -71,3 +112,7 @@ def pregunta_01():
 
 
     """
+
+if __name__ == '__main__':
+    pregunta_01()
+
